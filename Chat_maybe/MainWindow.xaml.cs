@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,17 @@ namespace Chat_maybe
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Connect_Click(object sender, RoutedEventArgs e)
+        {
+            Interface client = new Client("192.168.0.103", 80);
+        }
+
+        private void StartServer_Click(object sender, RoutedEventArgs e)
+        {
+            Interface server = new Server(8080);
+            
         }
     }
 }
