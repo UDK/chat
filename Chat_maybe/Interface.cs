@@ -9,8 +9,8 @@ namespace Chat_maybe
     interface Interface
     {
         void Connect();
-        void Disconect();
+        void Disconect(int id);
         void Send(string message);
-        Task<string> Read_ms();
+        string Read_ms();
     }
 }

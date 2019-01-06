@@ -3,7 +3,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,6 +21,8 @@ namespace Chat_maybe
     /// </summary>
     public partial class MainWindow : Window
     {
+        Interface client = null;
+        Interface server = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -28,13 +30,35 @@ namespace Chat_maybe
 
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
-            Interface client = new Client("192.168.0.103", 80);
+            client = new Client("192.168.0.103", 80);
+            client.Connect();
+            server.Send("ping");
+            Thread thread = new Thread(new ThreadStart(set_msg));
+            thread.Start();
+        }
+
+        async private void set_msg()
+        {
+            while (true)
+            {
+                string s = client.Read_ms();
+                if (s != null)
+                {
+                    await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add(s));
+                    //ListBoxee.Items.Add(s);
+                }
+            }
+        }
+
+        private void Disconnect_Click(object sender, RoutedEventArgs e)
+        {
+            client.Disconect(0);
         }
 
         private void StartServer_Click(object sender, RoutedEventArgs e)
         {
-            Interface server = new Server(8080);
-            
+            server = new Server(8080);
+            server.Connect();
         }
     }
 }

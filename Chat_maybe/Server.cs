@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chat_maybe
@@ -13,43 +14,87 @@ namespace Chat_maybe
         List<NetworkStream> networkStreams = new List<NetworkStream>(2);
         TcpListener Listener;
 
+        static object locker = new object();
+
         public Server(int port)
         {
             var ip = System.Net.IPAddress.Parse("192.168.0.103");
-            Listener = new TcpListener(ip,80);
-            Connect();
-        }
+            Listener = new TcpListener(ip, 80);
 
-        async public void Connect()
+        }
+        public void Connect()
         {
             Listener.Start();
-            tcpClients.Add(await Listener.AcceptTcpClientAsync());
-            networkStreams.Add(tcpClients[tcpClients.Count-1].GetStream());
+            Thread thread = new Thread(new ThreadStart(Connect_Thread)), thread1 = new Thread(new ThreadStart(Try_ping));
+            thread.Name = "get_connect";
+            thread1.Name = "Ping";
+            thread.Start();
+            thread1.Start();
         }
-
-        public void Disconect()
+        private void Try_ping()
         {
-            throw new NotImplementedException();
+
+            while (true)
+            {
+                for (int i = 0; i < tcpClients.Count; i++)
+                {
+                    if (tcpClients.Count == 0)
+                        break;
+                    lock (locker)
+                    {
+                        if (tcpClients[i].Connected == false)
+                        {
+                            Disconect(i);
+                        }
+                    }
+                }
+                Thread.Sleep(1000);
+            }
+        }
+        private void Connect_Thread()
+        {
+            while (true)
+            {
+                var buffer = Listener.AcceptTcpClient();
+                lock (locker)
+                {
+                    tcpClients.Add(buffer);
+                    networkStreams.Add(buffer.GetStream());
+                }
+            }
+
         }
 
-        async public Task<string> Read_ms()
+        public void Disconect(int id)
+        {
+            tcpClients.RemoveAt(id);
+        }
+
+        public string Read_ms()
         {
             byte[] mass = new byte[4096];
-            for(int i = 0; i < mass.Length; i++)
+            for (int i = 0; i < mass.Length; i++)
             {
-                //Мне это не nice
-                await networkStreams[i].ReadAsync(mass, 0, mass.Length);
+                networkStreams[i].Read(mass, 0, mass.Length);
             }
             Send(Encoding.ASCII.GetString(mass));
             return null;
         }
 
-        public void Send(string message)
+        async public void Send(string message)
         {
             byte[] buff = Encoding.ASCII.GetBytes(message);
-            foreach (var buf in networkStreams)
+            try
             {
-                buf.Write(buff, 0, buff.Length);
+                for (int i = 0; i < tcpClients.Count; i++)
+                {
+                    networkStreams.Add(tcpClients[i].GetStream());
+                    await networkStreams[i].WriteAsync(buff, 0, buff.Length);
+                }
+            }
+            catch
+            {
+
             }
         }
     }

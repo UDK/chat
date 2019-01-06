@@ -15,20 +15,27 @@
                     <TextBlock>Client</TextBlock>
                 </TabItem.Header>
                 <TabItem.Content>
-                    <DockPanel>
+                    <Canvas>
                         <Button
-                            Name="Connect" Height="25" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Connect_Click" Margin="33 25 0 0" Content="Connect">
-                
+                            Name="Connect" Height="25" Width="100" Click="Connect_Click" Content="Connect" Canvas.Left="25" Canvas.Top="25" >
+
+                        </Button>
+                        <Button
+                            Name="Send" Height="25" Width="100" Canvas.Right="250" Canvas.Bottom="7.5" Content="Отправить" IsEnabled="False" >
+                            
+                        </Button>
+                        <Button
+                            Name="Disconnect" Height="25" Width="100" Canvas.Left="25" Canvas.Top="75" Content="Disconnect" Click="Disconnect_Click">
+
                         </Button>
                         <kk:MaskedTextBox 
-                            Name="Mask" Height="25"  Background="Cyan" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 25 33 0" Mask="000.000.00.000" >
+                             Canvas.Top="25" Canvas.Right="25" Name="Mask" Height="25"  Background="Cyan"  HorizontalAlignment="Right" VerticalAlignment="Top" Mask="000.000.00.000" >
 
                         </kk:MaskedTextBox>
-                        <!--<listbox
-                            name="lisbox" dockpanel.dock="bottom" height="100" width="700">
-                            
-                        </listbox>-->
-                    </DockPanel>
+                        <ListBox
+                            Name="ListBoxee" Canvas.Bottom="40" Canvas.Right="0" Height="400"  HorizontalAlignment="Right" Width="614" />
+                        
+                    </Canvas>
                 </TabItem.Content>
             </TabItem>
             <TabItem

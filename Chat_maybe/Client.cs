@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net.Sockets;
 
 namespace Chat_maybe
@@ -11,15 +11,15 @@ namespace Chat_maybe
     {
         NetworkStream stream;
         TcpClient Clienttcp;
+        int id;
         string ip;
         int port;
 
         //public Client() { }
-        public Client (string ip,int port)
+        public Client(string ip, int port)
         {
             this.ip = ip;
             this.port = port;
-            Connect();
         }
         public void Connect()
         {
@@ -27,10 +27,10 @@ namespace Chat_maybe
             stream = Clienttcp.GetStream();
         }
 
-        public void Disconect()
+        public void Disconect(int id)
         {
             Clienttcp.Close();
-            stream = null;
+            //stream = null;
         }
 
         public void Send(string message)
@@ -39,16 +39,28 @@ namespace Chat_maybe
                 return;
             byte[] ms = Encoding.Unicode.GetBytes(message);
             stream.Write(ms, 0, ms.Length);
-            
+
         }
-        async public Task<string> Read_ms()
+        public string Read_ms()
         {
-            if (stream == null)
-                return null;
-            byte[] buffer = new byte[4096];
-            await stream.ReadAsync(buffer, 0, buffer.Length);
-            string message = Encoding.ASCII.GetString(buffer);
-            return message;
+            //string s = null;
+            //Thread thread = new Thread(delegate () { s = Read_stream(); });
+            //thread.Start();
+            if (Clienttcp.Available > 0)
+            {
+                try
+                {
+                    byte[] buffer = new byte[4096];
+                    int count = stream.Read(buffer, 0, buffer.Length);
+                    return Encoding.ASCII.GetString(buffer, 0, count);
+                }
+                catch
+                {
+                    return "Соеденение прервано";
+                }
+            }
+            return null;
         }
+
     }
 }
