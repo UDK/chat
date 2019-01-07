@@ -21,7 +21,7 @@
 
                         </Button>
                         <Button
-                            Name="Send" Height="25" Width="100" Canvas.Right="250" Canvas.Bottom="7.5" Content="Отправить" IsEnabled="False" >
+                            Name="Send" Height="25" Width="100" Canvas.Right="250" Canvas.Bottom="7.5" Content="Отправить" IsEnabled="False" Click="Send_Click" >
                             
                         </Button>
                         <Button
@@ -33,7 +33,12 @@
 
                         </kk:MaskedTextBox>
                         <ListBox
-                            Name="ListBoxee" Canvas.Bottom="40" Canvas.Right="0" Height="400"  HorizontalAlignment="Right" Width="614" />
+                            Name="ListBoxee" Canvas.Bottom="100" Canvas.Right="0" Height="350"  HorizontalAlignment="Right" Width="614" >
+                        </ListBox>
+                        <TextBox
+                            Name="textbox" Width="614" Height="25" Canvas.Bottom="50" Canvas.Right="0">
+                            
+                        </TextBox>
                         
                     </Canvas>
                 </TabItem.Content>
@@ -43,12 +48,19 @@
                 <TabItem.Header>
                     <TextBlock>Server</TextBlock>
                 </TabItem.Header>
-                <DockPanel>
+                <Canvas>
                     <Button
-          Name="StartServer" Height="25" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Click="StartServer_Click" Margin="33 25 0 0" Content="Start">
-
+          Name="StartServer" Height="25" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Click="StartServer_Click" Canvas.Left="25" Canvas.Top="25" Content="Start">
                     </Button>
-                </DockPanel>
+                    <Button
+                        Name="Stop_Server" Height="25" Width="100" Canvas.Left="25" Canvas.Top="75" Content="Stop" Click="Stop_Server_Click" >
+                        
+                    </Button>
+                    <ListBox
+                        Name="ListBoxe_Server"  Canvas.Bottom="40" Canvas.Right="0" Height="400"  HorizontalAlignment="Right" Width="614">
+                        
+                    </ListBox>
+                </Canvas>
             </TabItem>
         </TabControl>
     </Grid>

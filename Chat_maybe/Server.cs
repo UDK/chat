@@ -12,6 +12,8 @@ namespace Chat_maybe
 {
     class Server : Interface
     {
+        Thread thread, thread1;
+
         List<TcpClient> tcpClients = new List<TcpClient>(2);
         List<NetworkStream> networkStreams = new List<NetworkStream>(2);
         TcpListener Listener;
@@ -27,7 +29,8 @@ namespace Chat_maybe
         public void Connect()
         {
             Listener.Start();
-            Thread thread = new Thread(new ThreadStart(Connect_Thread)), thread1 = new Thread(new ThreadStart(Try_ping));
+            thread = new Thread(new ThreadStart(Connect_Thread));
+            thread1 = new Thread(new ThreadStart(Try_ping));
             thread.Name = "get_connect";
             thread1.Name = "Ping";
             thread.Start();
@@ -55,30 +58,55 @@ namespace Chat_maybe
         }
         private void Connect_Thread()
         {
+            TcpClient buffer = null;
             //Поток, который чекает подключаемые соеденения 
             while (true)
             {
-                var buffer = Listener.AcceptTcpClient();
+                //Не забыть решить проблему с этим try catch и сделать это красивее
+                try
+                {
+                    buffer = Listener.AcceptTcpClient();
+                }
+                catch
+                {
+                    break;
+                }
                 lock (locker)
                 {
                     tcpClients.Add(buffer);
                     networkStreams.Add(buffer.GetStream());
                 }
+                Send(tcpClients.Count - 1);
             }
 
         }
 
         public void Disconect(int id)
         {
-            tcpClients.RemoveAt(id);
-            networkStreams.RemoveAt(id);
+            lock (locker)
+            {
+                tcpClients.RemoveAt(id);
+                networkStreams.RemoveAt(id);
+            }
         }
-
+        public void Stop()
+        {
+            //thread.Abort();
+            thread1.Abort();
+            lock (locker)
+            {
+                for (int i = 0; i < tcpClients.Count; i++)
+                {
+                    Send(new message_error("Хост умер"));
+                    Disconect(i);
+                }
+            }
+            Listener.Stop();
+        }
         public object Read_ms()
         {
             BinaryFormatter ser = new BinaryFormatter();
-
-            byte[] mass = new byte[4096];
+            //byte[] mass = new byte[4096];
             for (int i = 0; i < networkStreams.Count; i++)
             {
                 object message = ser.Deserialize(networkStreams[i]);
@@ -86,26 +114,30 @@ namespace Chat_maybe
                 {
                     continue;
                 }
+                else if (message.GetType() == typeof(message_error))
+                {
+                    message_error buff = (message_error)message;
+                    Disconect(buff.id);
+                }
+                else
+                {
+                    Send(message);
+                }
             }
-            Send(Encoding.ASCII.GetString(mass));
+            //Send(message);
             return null;
         }
 
-        async public void Send(object message)
+        public void Send(object message)
         {
-            byte[] buff = Encoding.ASCII.GetBytes((string)message);
+            //byte[] buff = Encoding.ASCII.GetBytes((string)message);
 
             for (int i = 0; i < tcpClients.Count; i++)
             {
-                try
-                {
-                    //networkStreams.Add(tcpClients[i].GetStream());
-                    await networkStreams[i].WriteAsync(buff, 0, buff.Length);
-                }
-                catch
-                {
-
-                }
+                //networkStreams.Add(tcpClients[i].GetStream());
+                //await networkStreams[i].WriteAsync(buff, 0, buff.Length);
+                BinaryFormatter ser = new BinaryFormatter();
+                ser.Serialize(networkStreams[i], message);
             }
 
         }

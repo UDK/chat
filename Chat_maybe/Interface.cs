@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,8 +23,17 @@ namespace Chat_maybe
             flag_error = true;
             this.message = message;
         }
-        readonly DateTime DateTime_error;
-        readonly bool flag_error;
-        public readonly string message;
+        public message_error(string message,int id)
+        {
+            DateTime_error = DateTime.Now;
+            flag_error = true;
+            this.message = message;
+            this.id = id;
+        }
+        public readonly DateTime DateTime_error;
+        public readonly bool flag_error;
+        public readonly object message;
+        public readonly int id;
     }
+    
 }

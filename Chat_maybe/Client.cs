@@ -12,9 +12,9 @@ namespace Chat_maybe
     {
         NetworkStream stream;
         TcpClient Clienttcp;
-        int id;
-        string ip;
-        int port;
+        public int id;
+        readonly string ip;
+        readonly int port;
 
         //public Client() { }
         public Client(string ip, int port)
@@ -37,33 +37,44 @@ namespace Chat_maybe
 
         public void Disconect(int id)
         {
-            Send(new message_error("Соеденение закрыто"));
+            Send(new message_error("Соеденение прервано",id));
             Clienttcp.Close();
             stream.Close();
             //stream = null;
         }
-
+        public void Disconect()
+        {
+            Clienttcp.Close();
+            stream.Close();
+        }
         public void Send(object message)
         {
             if (stream == null)
                 return;
             BinaryFormatter ser = new BinaryFormatter();
-            ser.Serialize(stream, message);//Encoding.Unicode.GetBytes(message);
-            
-
+            ser.Serialize(stream, message);
         }
         public object Read_ms()
         {
-            //string s = null;
-            //Thread thread = new Thread(delegate () { s = Read_stream(); });
-            //thread.Start();
             try
             {
                 if (Clienttcp.Available > 0)
                 {
-                    byte[] buffer = new byte[4096];
-                    int count = stream.Read(buffer, 0, buffer.Length);
-                    return Encoding.ASCII.GetString(buffer, 0, count);
+                    object buff = new BinaryFormatter().Deserialize(stream);
+                    if (buff.GetType() == typeof(int))
+                    {
+                        id = (int)buff;
+                        return null;
+                    }
+                    if(buff.GetType() == typeof(message_error))
+                    {
+                        Disconect();
+                        return buff;
+                    }
+                    return buff;
+                    //byte[] buffer = new byte[4096];
+                    //int count = stream.Read(buffer, 0, buffer.Length);
+                    //return Encoding.ASCII.GetString(buffer, 0, count);
                 }
             }
             catch
