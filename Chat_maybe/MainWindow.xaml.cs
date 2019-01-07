@@ -1,18 +1,5 @@
-﻿using System;
-using System.Net;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Chat_maybe
 {
@@ -21,8 +8,8 @@ namespace Chat_maybe
     /// </summary>
     public partial class MainWindow : Window
     {
-        Interface client = null;
-        Interface server = null;
+        Client client = null;
+        Server server = null;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,17 +22,28 @@ namespace Chat_maybe
             server.Send("ping");
             Thread thread = new Thread(new ThreadStart(set_msg));
             thread.Start();
+            Connect.IsEnabled = false;
+            Disconnect.IsEnabled = true;
         }
-
+        //Связь между listbox и потоками
         async private void set_msg()
         {
             while (true)
             {
-                string s = client.Read_ms();
+                object s = client.Read_ms();
                 if (s != null)
                 {
-                    await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add(s));
-                    //ListBoxee.Items.Add(s);
+                    if (s.GetType() == typeof(string))
+                    {
+                        await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add(s));
+                        //ListBoxee.Items.Add(s);
+                    }
+                    else if (s.GetType() == typeof(message_error))
+                    {
+                        var buff = (message_error)s;
+                        await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add(buff.message));
+                        break;
+                    }
                 }
             }
         }
@@ -53,6 +51,8 @@ namespace Chat_maybe
         private void Disconnect_Click(object sender, RoutedEventArgs e)
         {
             client.Disconect(0);
+            Connect.IsEnabled = true;
+            Disconnect.IsEnabled = false;
         }
 
         private void StartServer_Click(object sender, RoutedEventArgs e)

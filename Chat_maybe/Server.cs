@@ -5,6 +5,8 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+
 
 namespace Chat_maybe
 {
@@ -33,7 +35,7 @@ namespace Chat_maybe
         }
         private void Try_ping()
         {
-
+            //Поток, чтобы чекать не отвалился ли кто
             while (true)
             {
                 for (int i = 0; i < tcpClients.Count; i++)
@@ -53,6 +55,7 @@ namespace Chat_maybe
         }
         private void Connect_Thread()
         {
+            //Поток, который чекает подключаемые соеденения 
             while (true)
             {
                 var buffer = Listener.AcceptTcpClient();
@@ -68,34 +71,43 @@ namespace Chat_maybe
         public void Disconect(int id)
         {
             tcpClients.RemoveAt(id);
+            networkStreams.RemoveAt(id);
         }
 
-        public string Read_ms()
+        public object Read_ms()
         {
+            BinaryFormatter ser = new BinaryFormatter();
+
             byte[] mass = new byte[4096];
-            for (int i = 0; i < mass.Length; i++)
+            for (int i = 0; i < networkStreams.Count; i++)
             {
-                networkStreams[i].Read(mass, 0, mass.Length);
+                object message = ser.Deserialize(networkStreams[i]);
+                if (message.Equals(null))
+                {
+                    continue;
+                }
             }
             Send(Encoding.ASCII.GetString(mass));
             return null;
         }
 
-        async public void Send(string message)
+        async public void Send(object message)
         {
-            byte[] buff = Encoding.ASCII.GetBytes(message);
-            try
+            byte[] buff = Encoding.ASCII.GetBytes((string)message);
+
+            for (int i = 0; i < tcpClients.Count; i++)
             {
-                for (int i = 0; i < tcpClients.Count; i++)
+                try
                 {
-                    networkStreams.Add(tcpClients[i].GetStream());
+                    //networkStreams.Add(tcpClients[i].GetStream());
                     await networkStreams[i].WriteAsync(buff, 0, buff.Length);
                 }
-            }
-            catch
-            {
+                catch
+                {
 
+                }
             }
+
         }
     }
 }
