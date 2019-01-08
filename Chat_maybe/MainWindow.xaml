@@ -8,7 +8,11 @@
         mc:Ignorable="d"        
         Title="MainWindow" Height="600" Width="800">
     <Grid>
-        <TabControl>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="87*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TabControl Grid.ColumnSpan="2">
             <TabItem
                 Name="ClientPanel">
                 <TabItem.Header>
@@ -22,14 +26,14 @@
                         </Button>
                         <Button
                             Name="Send" Height="25" Width="100" Canvas.Right="250" Canvas.Bottom="7.5" Content="Отправить" IsEnabled="False" Click="Send_Click" >
-                            
+
                         </Button>
                         <Button
                             Name="Disconnect" Height="25" Width="100" Canvas.Left="25" Canvas.Top="75" Content="Disconnect" Click="Disconnect_Click">
 
                         </Button>
                         <kk:MaskedTextBox 
-                             Canvas.Top="25" Canvas.Right="25" Name="Mask" Height="25"  Background="Cyan"  HorizontalAlignment="Right" VerticalAlignment="Top" Mask="000.000.00.000" >
+                             Canvas.Top="25" Canvas.Right="25" Name="Mask" Height="25"  Background="Cyan" HorizontalAlignment="Right" VerticalAlignment="Top" Mask="000.000.000.000" >
 
                         </kk:MaskedTextBox>
                         <ListBox
@@ -37,9 +41,9 @@
                         </ListBox>
                         <TextBox
                             Name="textbox" Width="614" Height="25" Canvas.Bottom="50" Canvas.Right="0">
-                            
+
                         </TextBox>
-                        
+
                     </Canvas>
                 </TabItem.Content>
             </TabItem>
@@ -54,11 +58,11 @@
                     </Button>
                     <Button
                         Name="Stop_Server" Height="25" Width="100" Canvas.Left="25" Canvas.Top="75" Content="Stop" Click="Stop_Server_Click" >
-                        
+
                     </Button>
                     <ListBox
                         Name="ListBoxe_Server"  Canvas.Bottom="40" Canvas.Right="0" Height="400"  HorizontalAlignment="Right" Width="614">
-                        
+
                     </ListBox>
                 </Canvas>
             </TabItem>

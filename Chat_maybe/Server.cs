@@ -62,7 +62,7 @@ namespace Chat_maybe
             //Поток, который чекает подключаемые соеденения 
             while (true)
             {
-                //Не забыть решить проблему с этим try catch и сделать это красивее
+                //Не забыть решить проблему с этим try catch - сделать это красивее
                 try
                 {
                     buffer = Listener.AcceptTcpClient();
@@ -77,6 +77,7 @@ namespace Chat_maybe
                     networkStreams.Add(buffer.GetStream());
                 }
                 Send(tcpClients.Count - 1);
+                Send("Пользователь "+ (tcpClients.Count - 1) + " подключился");
             }
 
         }

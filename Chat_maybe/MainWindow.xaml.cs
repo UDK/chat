@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Windows;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Chat_maybe
 {
@@ -17,19 +18,24 @@ namespace Chat_maybe
         public MainWindow()
         {
             InitializeComponent();
+            Mask.Text = "1921680  103";
         }
 
         private void Connect_Click(object sender, RoutedEventArgs e)
         {
-            client = new Client("192.168.0.103", 80);
+            StringBuilder ss = new StringBuilder(Mask.Text);
+            ss.Replace(",", "."); ss.Replace("_", "");
+            client = new Client(ss.ToString(), 80);
             client.Connect();
             Thread thread = new Thread(new ThreadStart(set_msg));
             thread.Start();
             Connect.IsEnabled = false;
             Disconnect.IsEnabled = true;
             Send.IsEnabled = true;
+            ServerPanel.IsEnabled = false;
             //server.Send("ping");
         }
+        //Связь между listbox и потоками
         async private void set_msg_server()
         {
             while (true)
@@ -88,7 +94,7 @@ namespace Chat_maybe
             Connect.IsEnabled = true;
             Disconnect.IsEnabled = false;
             Send.IsEnabled = false;
-            
+            ServerPanel.IsEnabled = true;
         }
 
         private void StartServer_Click(object sender, RoutedEventArgs e)
@@ -99,6 +105,7 @@ namespace Chat_maybe
             thread_serv.Name = "get_msg_server";
             thread_serv.Start();
             ListBoxe_Server.Items.Add("Хост старт");
+            ClientPanel.IsEnabled = false;
         }
 
         private void Stop_Server_Click(object sender, RoutedEventArgs e)
@@ -107,6 +114,7 @@ namespace Chat_maybe
             thread_serv.Abort();
             server.Stop();
             ListBoxe_Server.Items.Add("Хост стоп");
+            ClientPanel.IsEnabled = true;
         }
 
         private void Send_Click(object sender, RoutedEventArgs e)
