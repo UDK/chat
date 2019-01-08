@@ -15,8 +15,7 @@ namespace Chat_maybe
         public int id;
         readonly string ip;
         readonly int port;
-
-        //public Client() { }
+        
         public Client(string ip, int port)
         {
             this.ip = ip;
@@ -28,20 +27,20 @@ namespace Chat_maybe
             {
                 Clienttcp = new TcpClient(ip, port);
                 stream = Clienttcp.GetStream();
-                Send(id+" Подключился");
+                Send(id + " Подключился");
             }
             catch
             {
-                
+
             }
         }
 
         public void Disconect(int id)
         {
-            Send(new message_error("Соеденение прервано",id));
+            Send(new message_error("Соеденение прервано", id));
             Clienttcp.Close();
             stream.Close();
-            //stream = null;
+            //stream = null; 
         }
         public void Disconect()
         {
@@ -50,6 +49,8 @@ namespace Chat_maybe
         }
         public void Send(object message)
         {
+            string buf = id + ": ";
+            message = buf + message;
             if (stream == null)
                 return;
             BinaryFormatter ser = new BinaryFormatter();
@@ -67,15 +68,15 @@ namespace Chat_maybe
                         id = (int)buff;
                         return null;
                     }
-                    if(buff.GetType() == typeof(message_error))
+                    if (buff.GetType() == typeof(message_error))
                     {
                         Disconect();
                         return buff;
                     }
                     return buff;
-                    //byte[] buffer = new byte[4096];
-                    //int count = stream.Read(buffer, 0, buffer.Length);
-                    //return Encoding.ASCII.GetString(buffer, 0, count);
+                    //byte[] buffer = new byte[4096]; 
+                    //int count = stream.Read(buffer, 0, buffer.Length); 
+                    //return Encoding.ASCII.GetString(buffer, 0, count); 
                 }
             }
             catch
@@ -84,8 +85,7 @@ namespace Chat_maybe
             }
             return null;
         }
-            
+
     }
 
 }
-
