@@ -50,6 +50,8 @@ namespace Chat_maybe
         }
         public void Send(object message)
         {
+            string buf = id + ": ";
+            message = buf + message;
             if (stream == null)
                 return;
             BinaryFormatter ser = new BinaryFormatter();
