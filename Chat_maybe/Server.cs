@@ -122,7 +122,6 @@ namespace Chat_maybe
                 }
                 else
                 {
-                    Send(message);
                     return message;
                 }
             }

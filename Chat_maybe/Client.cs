@@ -28,6 +28,7 @@ namespace Chat_maybe
             {
                 Clienttcp = new TcpClient(ip, port);
                 stream = Clienttcp.GetStream();
+                Send(id+" Подключился");
             }
             catch
             {
