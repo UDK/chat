@@ -45,14 +45,15 @@ namespace Chat_maybe
                 {
                     if (s.GetType() == typeof(string))
                     {
-                        //await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add(s));
+                        await Dispatcher.InvokeAsync(() => ListBoxe_Server.Items.Add(s));
                         server.Send(s);
                         //ListBoxee.Items.Add(s);
                     }
                     else if (s.GetType() == typeof(message_error))
                     {
                         var buff = (message_error)s;
-                        await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add("Отключился: id"+buff.message));
+                        //await Dispatcher.InvokeAsync(() => ListBoxee.Items.Add("Отключился: id"+buff.message));
+                        await Dispatcher.InvokeAsync(() => ListBoxe_Server.Items.Add(buff.message));
                         server.Disconect((int)buff.message);
                     }
                 }
@@ -77,6 +78,7 @@ namespace Chat_maybe
                         await Dispatcher.InvokeAsync(() => Connect.IsEnabled = true);
                         await Dispatcher.InvokeAsync(() => Disconnect.IsEnabled = false);
                         await Dispatcher.InvokeAsync(() => Send.IsEnabled = false);
+                        await Dispatcher.InvokeAsync(() => ServerPanel.IsEnabled = true);
                         break;
                     }
                 }
