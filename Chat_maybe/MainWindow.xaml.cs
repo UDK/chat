@@ -26,13 +26,16 @@ namespace Chat_maybe
             ss.Replace(",", "."); ss.Replace("_", "");
             client = new Client(ss.ToString(), 80);
             client.Connect();
+            if(client.Clienttcp_work == false)
+            {
+                MessageBox.Show("Подключение не установлено");
+                return;
+            }
             Thread thread = new Thread(new ThreadStart(set_msg));
             thread.Start();
             Connect.IsEnabled = false;
             Disconnect.IsEnabled = true;
             Send.IsEnabled = true;
-            //ServerPanel.IsEnabled = false;
-            //server.Send("ping");
         }
         //Связь между listbox и потоками
         async private void set_msg_server()

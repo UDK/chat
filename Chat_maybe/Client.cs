@@ -16,6 +16,21 @@ namespace Chat_maybe
         readonly string ip;
         readonly int port;
         
+        public bool Clienttcp_work
+        {
+            get
+            {
+                if(Clienttcp == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
         public Client(string ip, int port)
         {
             this.ip = ip;
@@ -23,15 +38,17 @@ namespace Chat_maybe
         }
         public void Connect()
         {
-            try
+            Clienttcp = new TcpClient();
+            var result = Clienttcp.BeginConnect(ip, port, null, null);
+            bool buff = result.AsyncWaitHandle.WaitOne(2000, true);
+            if (buff == true)
             {
-                Clienttcp = new TcpClient(ip, port);
                 stream = Clienttcp.GetStream();
                 Send(id + " Подключился");
             }
-            catch
+            else
             {
-
+                Clienttcp = null;
             }
         }
 

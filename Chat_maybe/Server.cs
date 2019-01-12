@@ -22,7 +22,7 @@ namespace Chat_maybe
 
         public Server(string ip,int port)
         {
-            var ip_buff = System.Net.IPAddress.Parse("192.168.0.103");
+            var ip_buff = System.Net.IPAddress.Parse(ip);
             Listener = new TcpListener(ip_buff, port);
 
         }

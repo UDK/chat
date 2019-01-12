@@ -29,7 +29,7 @@
 
                         </Button>
                         <Button
-                            Name="Disconnect" Height="25" Width="100" Canvas.Left="25" Canvas.Top="75" Content="Disconnect" Click="Disconnect_Click">
+                            Name="Disconnect" Height="25" Width="100" Canvas.Left="25" Canvas.Top="75" Content="Disconnect" Click="Disconnect_Click" IsEnabled="False">
 
                         </Button>
                         <kk:MaskedTextBox 
