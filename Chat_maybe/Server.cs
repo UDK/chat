@@ -20,10 +20,10 @@ namespace Chat_maybe
 
         static object locker = new object();
 
-        public Server(int port)
+        public Server(string ip,int port)
         {
-            var ip = System.Net.IPAddress.Parse("192.168.0.103");
-            Listener = new TcpListener(ip, 80);
+            var ip_buff = System.Net.IPAddress.Parse("192.168.0.103");
+            Listener = new TcpListener(ip_buff, port);
 
         }
         public void Connect()
@@ -110,19 +110,28 @@ namespace Chat_maybe
             //byte[] mass = new byte[4096];
             for (int i = 0; i < networkStreams.Count; i++)
             {
-                object message = ser.Deserialize(networkStreams[i]);
-                if (message.Equals(null))
+                try
                 {
-                    continue;
+                    if (networkStreams[i].DataAvailable != true)
+                        continue;
+                    object message = ser.Deserialize(networkStreams[i]);
+                    if (message.Equals(null))
+                    {
+                        continue;
+                    }
+                    else if (message.GetType() == typeof(message_error))
+                    {
+                        message_error buff = (message_error)message;
+                        Disconect(buff.id);
+                    }
+                    else
+                    {
+                        return message;
+                    }
                 }
-                else if (message.GetType() == typeof(message_error))
+                catch
                 {
-                    message_error buff = (message_error)message;
-                    Disconect(buff.id);
-                }
-                else
-                {
-                    return message;
+                    Thread.Sleep(100);
                 }
             }
             //Send(message);

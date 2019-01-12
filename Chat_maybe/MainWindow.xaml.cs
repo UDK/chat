@@ -18,7 +18,6 @@ namespace Chat_maybe
         public MainWindow()
         {
             InitializeComponent();
-            Mask.Text = "1921680  103";
         }
 
         private void Connect_Click(object sender, RoutedEventArgs e)
@@ -32,7 +31,7 @@ namespace Chat_maybe
             Connect.IsEnabled = false;
             Disconnect.IsEnabled = true;
             Send.IsEnabled = true;
-            ServerPanel.IsEnabled = false;
+            //ServerPanel.IsEnabled = false;
             //server.Send("ping");
         }
         //Связь между listbox и потоками
@@ -101,13 +100,17 @@ namespace Chat_maybe
 
         private void StartServer_Click(object sender, RoutedEventArgs e)
         {
-            server = new Server(8080);
+            StringBuilder ss = new StringBuilder(Mask_Server.Text);
+            ss.Replace(",", "."); ss.Replace("_", "");
+            server = new Server(ss.ToString(), 80);
             server.Connect();
             thread_serv = new Thread(new ThreadStart(set_msg_server));
             thread_serv.Name = "get_msg_server";
             thread_serv.Start();
             ListBoxe_Server.Items.Add("Хост старт");
             ClientPanel.IsEnabled = false;
+            Stop_Server.IsEnabled = true;
+            StartServer.IsEnabled = false;
         }
 
         private void Stop_Server_Click(object sender, RoutedEventArgs e)
@@ -117,6 +120,7 @@ namespace Chat_maybe
             server.Stop();
             ListBoxe_Server.Items.Add("Хост стоп");
             ClientPanel.IsEnabled = true;
+            StartServer.IsEnabled = true;
         }
 
         private void Send_Click(object sender, RoutedEventArgs e)
